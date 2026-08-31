@@ -11,12 +11,13 @@ const wss = new WebSocket.Server({ server });
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ⚙️ 1. ใส่เบอร์ TrueMoney ของคุณที่นี่
+// ⚙️ 1. ตั้งค่าข้อมูลสตรีมเมอร์ของคุณ
 const CONFIG = {
-  MY_TRUEMONEY_PHONE: "0967160553", // 👈 เปลี่ยนเป็นเบอร์ TrueMoney ของคุณ
+  MY_TRUEMONEY_PHONE: "0967160553", // 👈 ใส่เบอร์ TrueMoney ของคุณที่ต้องการรับเงิน
   STREAMER_NAME: "YameeN Channel"
 };
 
+// 📡 ฟังก์ชันยิงแจ้งเตือนไปยัง OBS Alert Box ทุกตัวที่เชื่อมต่ออยู่
 function broadcastToOBS(data) {
   const payload = JSON.stringify({ type: 'DONATION_ALERT', data });
   wss.clients.forEach(client => {
@@ -26,6 +27,9 @@ function broadcastToOBS(data) {
   });
 }
 
+// -------------------------------------------------------------
+// 2. ฟังก์ชันดึงเงินจากซองของขวัญ TrueMoney Wallet เข้าบัญชีจริง
+// -------------------------------------------------------------
 function redeemTrueMoneyVoucher(voucherHash, phoneNumber) {
   return new Promise((resolve, reject) => {
     const payload = JSON.stringify({ mobile: phoneNumber, voucher_hash: voucherHash });
@@ -56,6 +60,9 @@ function redeemTrueMoneyVoucher(voucherHash, phoneNumber) {
   });
 }
 
+// -------------------------------------------------------------
+// 3. API โดเนทผ่าน TrueMoney (เงินเข้าจริงทันที 100%)
+// -------------------------------------------------------------
 app.post('/api/donate-truemoney', async (req, res) => {
   const { name, voucherUrl, message } = req.body;
 
@@ -80,6 +87,7 @@ app.post('/api/donate-truemoney', async (req, res) => {
 
       console.log(`[TRUEMONEY] 💰 เงินเข้าบัญชีจริง ฿${amount} จาก: ${donorName}`);
 
+      // เมื่อเงินเข้าจริง สั่งเด้งแจ้งเตือนขึ้นจอ OBS ทันที!
       broadcastToOBS({
         name: donorName,
         amount: amount,
@@ -96,7 +104,52 @@ app.post('/api/donate-truemoney', async (req, res) => {
   }
 });
 
+// -------------------------------------------------------------
+// 4. API สำหรับรับคำสั่งทดสอบระบบแจ้งเตือน (Test Alert 1 บาท) ⭐
+// -------------------------------------------------------------
+app.post('/api/test-alert', (req, res) => {
+  const { name, amount, message } = req.body;
+  const testData = {
+    name: name || 'ผู้ทดสอบระบบ',
+    amount: Number(amount) || 1,
+    message: message || 'ทดสอบระบบโดเนท 1 บาท เสียงอ่านภาษาไทยทำงานสมบูรณ์ครับ!'
+  };
+
+  console.log(`[TEST ALERT] 🧪 ยิงแจ้งเตือนทดสอบ: ฿${testData.amount} จาก: ${testData.name}`);
+  
+  // สั่งให้หน้าจอ OBS เด้งการ์ดแจ้งเตือนทันที
+  broadcastToOBS(testData);
+  res.json({ success: true, testData });
+});
+
+// -------------------------------------------------------------
+// 5. API รับแจ้งเตือนเงินเข้าบัญชีธนาคาร (SCB / K PLUS ผ่าน MacroDroid)
+// -------------------------------------------------------------
+app.post('/api/bank-notify', (req, res) => {
+  const { text } = req.body;
+  console.log('[BANK NOTIFY] 📲 ได้รับแจ้งเตือนจากมือถือ:', text);
+
+  if (text) {
+    const amountMatch = text.match(/([0-9,]+\.[0-9]{2})/);
+    if (amountMatch) {
+      const amount = parseFloat(amountMatch.replace(',', ''));
+      console.log(`[BANK SUCCESS] 💎 เงินโอนเข้าบัญชีจริง ฿${amount} -> สั่งเด้งจอ OBS`);
+
+      broadcastToOBS({
+        name: 'ผู้สนับสนุนผ่านพร้อมเพย์',
+        amount: amount,
+        message: 'ขอบคุณสำหรับการสนับสนุนครับ!'
+      });
+    }
+  }
+  res.status(200).send('OK');
+});
+
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`🚀 Donation Server Online on port ${PORT}`);
+  console.log(`====================================================`);
+  console.log(`🚀 [DONATION SERVER] รันแล้วที่พอร์ต ${PORT}`);
+  console.log(`📱 หน้าโดเนท: http://localhost:${PORT}/index.html`);
+  console.log(`🎬 ลิงก์ OBS Alert: http://localhost:${PORT}/alert.html`);
+  console.log(`====================================================`);
 });
