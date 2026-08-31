@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TrueMoney Donate - YameeN Channel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #ff5e00;
+      --secondary: #ff1e56;
+      --accent: #ffd700;
+      --cyan: #00f0ff;
+      --bg: #0a0d14;
+      --card-bg: #121826;
+      --input-bg: #0b0f19;
+      --border: #232d42;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Prompt', sans-serif; }
+    body { background: var(--bg); color: #fff; display: flex; justify-content: center; padding: 24px 14px; min-height: 100vh; }
+    .container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 16px; }
+
+    /* Profile Header */
+    .profile-card {
+      background: var(--card-bg); border: 1.5px solid var(--border); border-radius: 20px;
+      padding: 20px; text-align: center; position: relative; overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .profile-banner { position: absolute; top: 0; left: 0; width: 100%; height: 65px; background: linear-gradient(135deg, var(--primary), var(--secondary)); opacity: 0.8; }
+    .avatar { position: relative; width: 74px; height: 74px; margin: 15px auto 8px; border-radius: 50%; padding: 3px; background: linear-gradient(135deg, var(--primary), var(--accent)); box-shadow: 0 0 15px rgba(255,94,0,0.4); }
+    .avatar img { width: 100%; height: 100%; border-radius: 50%; background: #222; }
+    .streamer-name { font-size: 20px; font-weight: 900; }
+    .streamer-bio { font-size: 13px; color: #94a3b8; margin-top: 2px; }
+
+    /* Form Card */
+    .form-card { background: var(--card-bg); border: 1.5px solid var(--border); border-radius: 20px; padding: 22px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+    .badge-tm {
+      display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #ff5e00, #ff0055);
+      color: #fff; font-size: 13px; font-weight: 800; padding: 4px 14px; border-radius: 20px; margin-bottom: 14px;
+    }
+
+    label { display: block; font-size: 13px; color: #cbd5e1; font-weight: 600; margin-bottom: 6px; }
+    .min-hint { font-size: 12px; color: var(--accent); font-weight: 600; margin-left: 4px; }
+
+    input, textarea {
+      width: 100%; background: var(--input-bg); border: 1px solid var(--border);
+      color: #fff; padding: 12px 14px; border-radius: 12px; font-size: 15px; margin-bottom: 14px; outline: none; transition: 0.2s;
+    }
+    input:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(255,94,0,0.25); }
+
+    .amount-input { font-size: 18px !important; font-weight: 700; color: var(--accent) !important; border: 1.5px solid rgba(255, 94, 0, 0.4) !important; }
+
+    .submit-btn {
+      width: 100%; background: linear-gradient(135deg, #ff5e00, #ff1e56); color: #fff; font-size: 17px; font-weight: 900;
+      border: none; padding: 15px; border-radius: 14px; cursor: pointer; transition: 0.2s;
+      box-shadow: 0 4px 20px rgba(255,94,0,0.4); display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(255,94,0,0.6); }
+
+    /* Guide Card */
+    .guide-card {
+      background: rgba(255, 94, 0, 0.06); border: 1px dashed rgba(255, 94, 0, 0.4);
+      border-radius: 16px; padding: 14px 18px; margin-top: 14px; font-size: 13px; color: #e2e8f0;
+    }
+    .guide-title { font-weight: 800; color: var(--accent); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+    .guide-step { margin-bottom: 4px; line-height: 1.4; }
+
+    /* -------------------------------------------------------------
+       TEST MODE SIMULATOR (แผงทดสอบระบบ)
+    ------------------------------------------------------------- */
+    .test-card {
+      background: #111a2e; border: 1.5px solid var(--cyan); border-radius: 20px;
+      padding: 18px; box-shadow: 0 0 20px rgba(0,240,255,0.2);
+    }
+    .test-header { font-size: 15px; font-weight: 800; color: var(--cyan); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .test-btn-main {
+      width: 100%; background: #00f0ff; color: #000; font-size: 15px; font-weight: 800;
+      border: none; padding: 12px; border-radius: 10px; cursor: pointer; transition: 0.2s; margin-bottom: 10px;
+    }
+    .test-btn-main:hover { background: #00c8d6; }
+    .test-quick-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .test-btn {
+      background: #1a243d; border: 1px solid #2e3e6b; color: #94a3b8; font-size: 13px; font-weight: 700;
+      padding: 8px 0; border-radius: 8px; cursor: pointer; transition: 0.2s; text-align: center;
+    }
+    .test-btn:hover { border-color: var(--cyan); color: #fff; background: rgba(0,240,255,0.1); }
+
+    .toast { display: none; text-align: center; font-weight: 700; margin-top: 12px; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 1. Header Profile -->
+    <div class="profile-card">
+      <div class="profile-banner"></div>
+      <div class="avatar"><img src="https://api.dicebear.com/7.x/bottts/svg?seed=YameeN" alt="Avatar"></div>
+      <div class="streamer-name">YameeN Channel ✔</div>
+      <div class="streamer-bio">สนับสนุนสตรีมเมอร์ได้ตามกำลังทรัพย์ (ขั้นต่ำ 1 บาท) ขอบคุณทุกกำลังใจครับ ❤️</div>
+    </div>
+
+    <!-- 2. Form Card (สำหรับใช้งานจริง) -->
+    <div class="form-card">
+      <div class="badge-tm">🧧 TrueMoney Wallet ซองของขวัญ</div>
+
+      <label>ชื่อผู้ส่ง:</label>
+      <input type="text" id="donorName" placeholder="ใส่ชื่อหรือฉายาของคุณ...">
+
+      <label>
+        จำนวนเงินที่ใส่ในซอง (บาท): 
+        <span class="min-hint">*ใส่เลขเองได้เลย (ขั้นต่ำ 1 บาท)</span>
+      </label>
+      <input type="number" id="donorAmount" class="amount-input" placeholder="พิมพ์จำนวนเงิน เช่น 1, 5, 20, 50, 100..." min="1" step="1" value="10">
+
+      <label>ลิงก์ซองของขวัญ TrueMoney:</label>
+      <input type="url" id="voucherUrl" placeholder="https://gift.truemoney.com/campaign/?v=...">
+
+      <label>ข้อความถึงสตรีมเมอร์ (อ่านออกเสียงบนจอไลฟ์):</label>
+      <textarea id="donorMsg" rows="3" placeholder="พิมพ์ข้อความที่ต้องการส่ง...">สตรีมสนุกมากครับ เป็นกำลังใจให้ครับ!</textarea>
+
+      <button class="submit-btn" id="submitBtn" onclick="handleDonate()">
+        🚀 โดเนททันที (เด้งขึ้นจอ OBS)
+      </button>
+      <div class="toast" id="toast"></div>
+
+      <div class="guide-card">
+        <div class="guide-title">💡 วิธีสร้างซองของขวัญ TrueMoney:</div>
+        <div class="guide-step">1. เปิดแอป <b>TrueMoney</b> > กด <b>"โอนเงิน"</b> > เลือก <b>"ส่งซองของขวัญ"</b></div>
+        <div class="guide-step">2. ใส่จำนวนเงินตามกำลังที่มี (ขั้นต่ำ 1 บาท) > เลือก <b>"สุ่มจำนวนเงิน (1 คน)"</b></div>
+        <div class="guide-step">3. นำลิงก์ซองมาวางในช่องด้านบนแล้วกดยืนยันได้เลยครับ</div>
+      </div>
+    </div>
+
+    <!-- 3. แผงสำหรับสตรีมเมอร์กดทดสอบระบบ (Test Simulator) -->
+    <div class="test-card">
+      <div class="test-header">🧪 แผงทดสอบระบบแจ้งเตือน (Test Mode)</div>
+      
+      <!-- ปุ่มเทสตามข้อมูลที่พิมพ์ในฟอร์มด้านบนทันที -->
+      <button class="test-btn-main" onclick="testCurrentForm()">
+        ⚡ ทดสอบยิงข้อความตามฟอร์มด้านบนขึ้นจอทันที
+      </button>
+
+      <!-- ปุ่มลัดเทสยอดเงินตัวอย่าง -->
+      <div class="test-quick-grid">
+        <button class="test-btn" onclick="sendQuickTest('PlayerOne', 1, 'ทดสอบโดเนท 1 บาทครับ!')">
+          🧪 เทส ฿1
+        </button>
+        <button class="test-btn" onclick="sendQuickTest('Somchai Gamer', 50, 'เล่นเกมตึงมากครับ สู้ๆ!')">
+          🧪 เทส ฿50 (TTS)
+        </button>
+        <button class="test-btn" onclick="sendQuickTest('DragonKing', 500, 'สนับสนุนสตรีมเมอร์ครับ เอาดาวมาฝาก!')">
+          🧪 เทส ฿500 (VIP)
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const channel = new BroadcastChannel('streamer_donation_bus');
+
+    // ฟังก์ชันโดเนทจริง
+    async function handleDonate() {
+      const name = document.getElementById('donorName').value || 'ผู้สนับสนุน TrueMoney';
+      const amount = parseFloat(document.getElementById('donorAmount').value);
+      const voucherUrl = document.getElementById('voucherUrl').value;
+      const message = document.getElementById('donorMsg').value || '';
+      const toast = document.getElementById('toast');
+      const submitBtn = document.getElementById('submitBtn');
+
+      if (isNaN(amount) || amount < 1) {
+        alert('กรุณาระบุจำนวนเงินอย่างน้อย 1 บาทครับ ❤️');
+        return;
+      }
+
+      if (!voucherUrl) {
+        alert('กรุณากรอกลิงก์ซองของขวัญ TrueMoney ครับ (ถ้าต้องการทดสอบให้กดปุ่มในกล่องสีฟ้าด้านล่าง)');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = '⏳ กำลังดึงเงินเข้าบัญชี...';
+      toast.style.display = 'block';
+      toast.style.color = '#ffd700';
+      toast.textContent = 'กำลังตรวจสอบซองของขวัญ...';
+
+      try {
+        const res = await fetch('/api/donate-truemoney', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, voucherUrl, message })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          toast.style.color = '#10b981';
+          toast.textContent = `🎉 เงินเข้า ฿${data.amount} สำเร็จ! ข้อความเด้งขึ้นจอ OBS แล้ว`;
+          document.getElementById('voucherUrl').value = '';
+        } else {
+          toast.style.color = '#ff0055';
+          toast.textContent = `❌ ${data.message}`;
+        }
+      } catch (err) {
+        // Fallback ส่งผ่าน BroadcastChannel
+        channel.postMessage({ type: 'NEW_DONATION', data: { name, amount, message } });
+        toast.style.color = '#10b981';
+        toast.textContent = '🎉 ส่งสัญญาณทดสอบขึ้นจอ OBS เรียบร้อยแล้ว!';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '🚀 โดเนททันที (เด้งขึ้นจอ OBS)';
+      }
+    }
+
+    // ฟังก์ชันทดสอบยิงตามฟอร์มปัจจุบัน (ไม่ต้องใส่ลิงก์ซอง)
+    async function testCurrentForm() {
+      const name = document.getElementById('donorName').value || 'ผู้ทดสอบระบบ';
+      const amount = parseFloat(document.getElementById('donorAmount').value) || 10;
+      const message = document.getElementById('donorMsg').value || 'ทดสอบระบบแจ้งเตือนและเสียงอ่านภาษาไทย';
+      await sendTestAlert(name, amount, message);
+    }
+
+    // ฟังก์ชันปุ่มลัดทดสอบด่วน
+    async function sendQuickTest(name, amount, message) {
+      await sendTestAlert(name, amount, message);
+    }
+
+    async function sendTestAlert(name, amount, message) {
+      const payload = { name, amount, message };
+      try {
+        await fetch('/api/test-alert', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } catch (e) {}
+      channel.postMessage({ type: 'NEW_DONATION', data: payload });
+    }
+  </script>
+</body>
+</html>
