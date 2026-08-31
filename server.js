@@ -13,7 +13,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // ⚙️ 1. ใส่เบอร์ TrueMoney ของคุณที่นี่
 const CONFIG = {
-  MY_TRUEMONEY_PHONE: "0812345678", // 👈 เปลี่ยนเป็นเบอร์ TrueMoney ของคุณ
+  MY_TRUEMONEY_PHONE: "0967160553", // 👈 เปลี่ยนเป็นเบอร์ TrueMoney ของคุณ
   STREAMER_NAME: "YameeN Channel"
 };
 
